@@ -1,0 +1,38 @@
+version: '3.5'
+services:
+  ls01:
+    image: docker.elastic.co/logstash/logstash:7.12.0
+    container_name: ls01
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+      - "5044:5044"
+    volumes:
+      - ./spring-pipeline.conf:/usr/share/logstash/pipeline/logstash.conf
+    networks:
+      - elk
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+    container_name: elasticsearch
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+    networks:
+      - elk
+
+  kib01:
+    image: docker.elastic.co/kibana/kibana:7.12.0
+    container_name: kib01
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    networks:
+      - elk
+
+networks:
+  elk:
+    driver: bridge

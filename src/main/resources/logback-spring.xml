@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%highlight(%d{ISO8601}) %highlight(%-5level) [%highlight(%t)] %cyan(%C{1.}): %msg%n%throwable
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <param name="Encoding" value="UTF-8"/>
+        <remoteHost>192.168.63.3</remoteHost>
+        <port>5000</port>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app_name":"My Logging example"}</customFields>
+        </encoder>
+    </appender>
+
+
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <appender-ref ref="Console"/>
+    </root>
+
+    <!-- LOG "com.example*" at TRACE level -->
+    <logger name="com.example" level="trace" additivity="false">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="logstash"/>
+    </logger>
+
+</configuration>
